@@ -1,14 +1,39 @@
+import os
 from datetime import datetime
 from flask import Flask, render_template, request, flash, redirect, url_for
 from werkzeug.utils import secure_filename
-from logging import DEBUG
+from logging import DEBUG, ERROR, basicConfig, getLogger
 
+
+#########################
+# CONFIGURATION SECTION #
+#########################
+
+# --- directory configuration
+path = os.getcwd()
+UPLOAD_FOLDER = os.path.join(path, 'uploads')
+LOG_FOLDER = os.path.join(path, 'logging')
+LOG_FILE = 'logfile.log'
+LOG_FORMAT = '%(asctime)s|%(name)s|%(levelname)s: %(message)s'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv'}
+
+if not os.path.isdir(UPLOAD_FOLDER):
+    os.mkdir(UPLOAD_FOLDER)
+
+if not os.path.isdir(LOG_FOLDER):
+    os.mkdir(LOG_FOLDER)
+
+# --- logger configuration (levels: debug, info, warning, error, critical)
+basicConfig(filename=os.path.join(LOG_FOLDER, LOG_FILE),
+            level=DEBUG,
+            format=LOG_FORMAT,
+            filemode='w')
+logger = getLogger(__name__)
 
 # --- app configuration and setup
 app = Flask(__name__)
-app.logger.setLevel(DEBUG)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = 'p@\x90\xb4\nO\xa2\x18\x10\x0eB\x88\xd0\xa8\xf5o\xfaC\x898n\x99\xf0['
-app.config['UPLOAD_FOLDER'] = '~'
 app.config['MAX_CONTENT_PATH'] = '~'
 
 # note: to generate the SECRET_KEY, one way is to
@@ -31,6 +56,10 @@ def store_file(file):
 
 def recent_uploads(num):
     return sorted(stored_files, key=lambda up: up['date_created'], reverse=True)[:num]
+
+
+def is_allowed(file):
+    return '.' in file and file.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # --- Model classes
@@ -61,9 +90,9 @@ def upload():
 def upload_file():
     if request.method == 'POST':
         f = request.files['file']
-        f.save(secure_filename(f.filename))
+        f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
         flash(f"Stored file: `{f.filename}`")
-        app.logger.debug(f"stored file: {f.filename}")
+        logger.debug(f"stored file `{f.filename}`")
         store_file(f.filename)
         return redirect(url_for('index'))
 
