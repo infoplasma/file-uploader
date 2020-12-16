@@ -7,16 +7,16 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="{{ url_for('static', filename='/css/normalize.min.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='/css/main.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
-        <script src="{{ url_for('static', filename='/js/vendor/modernizr-2.8.3-respond-1.4.2.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/vendor/modernizr-2.8.3-respond-1.4.2.min.js') }}"></script>
     </head>
     <body>
 
         <div class="header-container">
             <header class="wrapper clearfix">
-                <a href="{{ url_for('index') }}"><h1 class="title">BitBox</h1></a>
+                <a href="{{ url_for('index') }}"><h1 class="title">BitBed - {{ title }}</h1></a>
                 <nav>
                     <ul>
                         <li><a href="{{ url_for('upload') }}">Upload</a></li>
@@ -30,6 +30,11 @@
         <div class="main-container">
             <div class="main wrapper clearfix">
 
+                <aside>
+                    <h3>Notes:</h3>
+                    <p>{{ testo }}</p>
+                </aside>
+
                 <article class=flashes>
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
@@ -41,11 +46,6 @@
                         {% endif %}
                     {% endwith %}
                 </article>
-
-                <aside>
-                    <h3>aside</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales urna non odio egestas tempor. Nunc vel vehicula ante. Etiam bibendum iaculis libero, eget molestie nisl pharetra in. In semper consequat est, eu porta velit mollis nec. Curabitur posuere enim eget turpis feugiat tempor. Etiam ullamcorper lorem dapibus velit suscipit ultrices.</p>
-                </aside>
 
                 {% block content %}
                 {% endblock %}
@@ -60,8 +60,8 @@
         </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="{{ url_for('static', filename='/js/vendor/jquery-1.11.2.min.js') }}"><\/script>')</script>
+        <script>window.jQuery || document.write('<script src="{{ url_for('static', filename='js/vendor/jquery-1.11.2.min.js') }}"><\/script>')</script>
 
-        <script src="j{{ url_for('static', filename='/s/main.js') }} "></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     </body>
 </html>

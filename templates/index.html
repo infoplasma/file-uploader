@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-BitBox -- Welcome
+BitBed -- Welcome
 {% endblock %}
 
 {% block content %}
@@ -11,6 +11,7 @@ BitBox -- Welcome
             <p>{{ testo }}</p>
         </header>
     </article>
+
     <article>
         <section>
             <h2>article section h2</h2>
@@ -23,6 +24,20 @@ BitBox -- Welcome
         <footer>
             <h3>article footer h3</h3>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sodales urna non odio egestas tempor. Nunc vel vehicula ante. Etiam bibendum iaculis libero, eget molestie nisl pharetra in. In semper consequat est, eu porta velit mollis nec. Curabitur posuere enim eget turpis feugiat tempor.</p>
+        <section>
+        <h2>Recent uploads</h2>
+        {% if recent_uploads %}
+            <ul>
+                {% for f in recent_uploads %}
+                    <li>
+                        {{ f.client_name }} added <a href="{{ f.file_name }}">{{ f.file_name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            No files uploaded yet.
+        {% endif %}
+    </section>
         </footer>
     </article>
 
