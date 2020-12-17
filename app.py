@@ -14,7 +14,7 @@ from wtforms.validators import DataRequired
 #########################
 
 # --- directory configuration
-BASE_DIR = os.getcwd()
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_DIR = os.path.join(BASE_DIR, 'uploads')
 LOG_DIR = os.path.join(BASE_DIR, 'logging')
 LOG_FILE = 'logfile.log'
@@ -103,7 +103,7 @@ class UploadForm(Form):
         if is_allowed(self.file_name.data.filename):
             return True
         else:
-            flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
+            flash('Allowed file types: txt, pdf, png, jpg, jpeg, gif')
             return False
 
 
@@ -112,31 +112,32 @@ class CustomerForm(Form):
 
 
 # --- OLD Model classes
-
 class Customer:
     def __init__(self, customer_name, registered_email):
         self.customer_name = customer_name
         self.registered_email = registered_email
 
 
-""" PENDING FROM IMPLEMENTATION OF FORMS
 # --- SQLAlchemy Model classes (Model ==> SQL Table)
-
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    file_name = db.Column(db.String(120), nullable=False)
-    description = db.Column(db.String(250), nullable=True)
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)    # NOTE: do not pass `()` to utcnow, as otherwise 
+    f_name = db.Column(db.String(120), nullable=False)
+    f_description = db.Column(db.String(250), nullable=True)
+    f_date_added = db.Column(db.DateTime, default=datetime.utcnow)    # NOTE: do not pass `()` to utcnow, as otherwise
     # it will resolve to the date at the time o construction? 
     # This way the date will be generated each time we create a new one
 
+    def __repr__(self):
+        return f"<File `{self.f_name}`: `{self.f_description}`"
 
 
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    customer_name = db.Column(db.String(80), unique=True)
-    registered_email = db.Column(db.String(120), unique=True)
-"""
+    c_name = db.Column(db.String(80), unique=True)
+    c_email = db.Column(db.String(120), unique=True)
+
+    def __repr__(self):
+        return f"<Customer `{self.c_name}`: `{self.c_email}`"
 
 
 # --- View functions
