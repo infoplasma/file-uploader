@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+BitBed -- Customer Uploads
+{% endblock %}
+
+{% block content %}
+
+<article>
+{{ form.hidden_tag() }}
+    <header>
+        <h2>Uploads for {{ cust.c_name}}</h2>
+        <ul>
+            {% for f in cust.c_files %}
+                <li>
+                    {{ f.f_name }}
+                </li>
+            {% endfor %}
+        </ul>
+
+    </header>
+</article>
+
+
+{% endblock %}

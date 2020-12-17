@@ -65,6 +65,13 @@ stored_files = []
 
 
 # --- helper functions
+
+# Fake login
+def logged_in_customer():
+    return Customer.query.filter_by(c_name="pippo").first()
+
+
+""" no longer in use
 def store_file(file, desc):
     stored_files.append(dict(
         file_name=file,
@@ -72,12 +79,25 @@ def store_file(file, desc):
         file_description=desc,
         date_created=datetime.utcnow()
     ))
-
+"""
 
 """ REPLACING THIS WITH staticmethod within the File model
 def recent_uploads(num):
     return sorted(stored_files, key=lambda up: up['date_created'], reverse=True)[:num]
 """
+
+
+def initdb():
+    db.create_all()
+    db.session.add(Customer(c_name="pippo", c_email="pippo@piscopauro.com"))
+    db.session.add(Customer(c_name="pizza", c_email="pizza@ngrillo.com"))
+    db.session.commit()
+    print("INITIALIZED THE DATABASE")
+
+
+def dropdb():
+    db.drop_all()
+    print("DROPPED DATABASE")
 
 
 def is_allowed(file):
@@ -87,6 +107,10 @@ def is_allowed(file):
 # --- FORMS: WTF Forms implementation ==> TODO: refactor to a separate module
 class IndexForm(Form):
     title = "File Uploader"
+
+
+class CustomerForm(Form):
+    title = "Customer data"
 
 
 class UploadForm(Form):
@@ -110,10 +134,6 @@ class UploadForm(Form):
             return False
 
 
-class CustomerForm(Form):
-    pass
-
-
 # --- MODELS: SQLAlchemy Model classes (Model ==> SQL Table) ==> TODO: refactor to a separate module
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -122,34 +142,30 @@ class File(db.Model):
     f_date_added = db.Column(db.DateTime, default=datetime.utcnow)    # NOTE: do not pass `()` to utcnow, as otherwise
     # it will resolve to the date at the time o construction? 
     # This way the date will be generated each time we create a new one
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
 
     @staticmethod
     def recent_uploads(num):
         return File.query.order_by(desc(File.f_date_added)).limit(num)  # select * from `file` order by `f_date_added` desc limit num
 
-
-
-
     def __repr__(self):
-        return f"<File `{self.f_name}`: `{self.f_description}`"
+        return f"<File {self.f_name} {self.f_description}>"
 
 
-"""
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     c_name = db.Column(db.String(80), unique=True)
     c_email = db.Column(db.String(120), unique=True)
+    c_files = db.relationship('File', backref='customer', lazy='dynamic')
+
+    # backref argument: means that on the other side of the relation, which is on the File side, there will be a
+    # property called `customer`, which will hold the user objects, so we'll not have to work with the customer.id field
+    # on the File class. Instead we can work with real Python objects since there will be a list of `file`
+    # objects on every `customer`, and there will be a `customer` object on every `file`. That way we hide the mechanics
+    # of setting up foreign keys on the database.
 
     def __repr__(self):
-        return f"<Customer `{self.c_name}`: `{self.c_email}`"
-"""
-
-
-# --- OLD Model classes
-class Customer:
-    def __init__(self, customer_name, registered_email):
-        self.customer_name = customer_name
-        self.registered_email = registered_email
+        return f"<Customer {self.c_name}: {self.c_email}>"
 
 
 # --- VIEWS: View functions
@@ -172,9 +188,9 @@ def upload():
         file_description = form.file_description.data
         file_name.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file_name.filename)))
 
-        store_file(file_name.filename, file_description)
+        fm = File(customer=logged_in_customer(), f_name=file_name.filename, f_description=file_description)
+        logger.debug(f"fm {fm} {logged_in_customer()} - {file_name.filename} - {file_description}")
 
-        fm = File(f_name=file_name.filename, f_description=file_description)
         db.session.add(fm)
         db.session.commit()
 
@@ -185,6 +201,16 @@ def upload():
     return render_template("upload.html", form=form)
 
 
+@app.route('/customer/<customer_name>')
+def customer(customer_name):
+    form = CustomerForm()
+    cust = Customer.query.filter_by(c_name=customer_name).first_or_404()
+    logger.debug(f"==> {cust} --- {customer_name}")
+    return render_template('customer.html',
+                           cust=cust,
+                           form=form)
+
+
 """ BEFORE CHANGING TO WTF FORM NEW VIEW ==>
 def upload():
 
@@ -193,7 +219,7 @@ def upload():
                            customer=Customer("Esteve", "esteve@infinity.com"))
 """
 
-
+""" no longer in use
 @app.route('/uploader', methods=['GET', 'POST'])
 def upload_file():
     form = UploadForm()
@@ -206,7 +232,7 @@ def upload_file():
         store_file(file_name.filename, file_description)
         return redirect(url_for('index'))
     return render_template(url_for('upload'))
-
+"""
 
 """ BEFORE CHANGING TO WTF FORM NEW VIEW ==>
 def upload_file():
