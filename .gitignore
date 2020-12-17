@@ -1,7 +1,6 @@
 .idea
-*.png
-*.gif
-*.jpg
-*.jpeg
 __pycache__/
 *.db
+uploads/
+logging/
+

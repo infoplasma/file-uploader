@@ -4,6 +4,10 @@ from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 from logging import DEBUG, basicConfig, getLogger
+from flask_wtf import Form
+from wtforms import FileField, StringField
+from wtforms.validators import DataRequired
+
 
 #########################
 # CONFIGURATION SECTION #
@@ -77,6 +81,36 @@ def is_allowed(file):
     return '.' in file and file.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+# --- WTF Forms implementation ==> TODO: refactor to a separate module
+class IndexForm(Form):
+    title = "File Uploader"
+
+
+class UploadForm(Form):
+    file_name = FileField('file_name', validators=[DataRequired()])
+    file_description = StringField('file_description')
+    customer_name = "Esteve"
+    registered_email = "esteve@infinity.com"
+    title = "upload"
+
+    def validate(self):
+        logger.debug(msg=self.file_name.data.filename)
+        logger.debug(msg=self.file_description.data)
+        if not Form.validate(self):
+            return False
+        if not self.file_description:
+            self.file_description = self.file_name.data.filename
+        if is_allowed(self.file_name.data.filename):
+            return True
+        else:
+            flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
+            return False
+
+
+class CustomerForm(Form):
+    pass
+
+
 # --- OLD Model classes
 
 class Customer:
@@ -86,6 +120,8 @@ class Customer:
 
 
 """ PENDING FROM IMPLEMENTATION OF FORMS
+# --- SQLAlchemy Model classes (Model ==> SQL Table)
+
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     file_name = db.Column(db.String(120), nullable=False)
@@ -93,7 +129,7 @@ class File(db.Model):
     date_added = db.Column(db.DateTime, default=datetime.utcnow)    # NOTE: do not pass `()` to utcnow, as otherwise 
     # it will resolve to the date at the time o construction? 
     # This way the date will be generated each time we create a new one
-# --- SQLAlchemy Model classes (Model ==> SQL Table)
+
 
 
 class Customer(db.Model):
@@ -107,20 +143,52 @@ class Customer(db.Model):
 @app.route('/')
 @app.route('/index')
 def index():
+    form = IndexForm()
     return render_template('index.html',
                            title="file uploader",
                            testo="Please use this page to upload your data.",
-                           recent_uploads=recent_uploads(4))
+                           recent_uploads=recent_uploads(4),
+                           form=form)
 
 
-@app.route('/upload')
+@app.route('/upload', methods=['GET', 'POST'])
 def upload():
+    form = UploadForm()
+    if form.validate_on_submit():
+        file_name = form.file_name.data
+        file_description = form.file_description.data
+        file_name.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file_name.filename)))
+        flash(f"Stored file: `{file_name.filename}`")
+        logger.debug(f"stored file `{file_name.filename}`")
+        store_file(file_name.filename, file_description)
+        return redirect(url_for('index'))
+    return render_template("upload.html", form=form)
+
+
+""" BEFORE CHANGING TO WTF FORM NEW VIEW ==>
+def upload():
+
     return render_template('upload.html', title="upload", testo="Please enter the file containing the raw data. "
                                                                 "Allowed Types are: `csv`, `xlsx`",
                            customer=Customer("Esteve", "esteve@infinity.com"))
+"""
 
 
 @app.route('/uploader', methods=['GET', 'POST'])
+def upload_file():
+    form = UploadForm()
+    if form.validate_on_submit():
+        file_name = form.file_name.data
+        file_description = form.file_description.data
+        file_name.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file_name.filename)))
+        flash(f"Stored file: `{file_name.filename}`")
+        logger.debug(f"stored file `{file_name.filename}`")
+        store_file(file_name.filename, file_description)
+        return redirect(url_for('index'))
+    return render_template(url_for('upload'))
+
+
+""" BEFORE CHANGING TO WTF FORM NEW VIEW ==>
 def upload_file():
     if request.method == 'POST':
         f = request.files['file']
@@ -130,6 +198,8 @@ def upload_file():
         logger.debug(f"stored file `{f.filename}`")
         store_file(f.filename, file_description)
         return redirect(url_for('index'))
+    return render_template(url_for('upload'))
+"""
 
 
 # --- Error handling

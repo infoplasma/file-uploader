@@ -5,26 +5,37 @@ BitBed -- Upload
 {% endblock %}
 
 {% block content %}
-    <article>
-        <section>
 
-            <h4>Client name</h4>
-            <p>{{ customer.customer_name }} </p>
-            <h4>Registered Email:</h4>
-            <p>{{ customer.registered_email }}</p>
+<section>
+    <h3>Select file you want to upload:</h3>
+    <table>
+        <tr>
+            <td>Client Name: </td>
+            <td>{{ form.customer_name}}</td>
+        </tr>
+        <tr>
+            <td>Client email: </td>
+            <td>{{ form.registered_email }}</td>
+        </tr>
+    </table>
+    <p></p>
+    <form action="" method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <table>
+            <tr>
+                <td>filename</td>
+                <td>{{ form.file_name(size=50) }}</td>
+            </tr>
+            <tr>
+                <td>description</td>
+                <td>{{ form.file_description(size=50) }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="submit">Submit</button></td>
+            </tr>
+        </table>
+    </form>
+</section>
 
-
-
-            <h3>Select file you want to upload:</h3>
-            <form action="http://localhost:5000/uploader" method="POST" enctype="multipart/form-data">
-                <input type="file" name="file" />
-                <p></p>
-                <p>Description
-                    <input type="text" name="file_description">
-                </p>
-
-                <button type="submit">Submit</button>
-            </form>
-        </section>
-    </article>
 {% endblock %}
