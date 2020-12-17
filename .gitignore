@@ -3,3 +3,5 @@
 *.gif
 *.jpg
 *.jpeg
+__pycache__/
+*.db
