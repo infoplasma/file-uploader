@@ -1,7 +1,8 @@
 import os
 from datetime import datetime
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 from werkzeug.utils import secure_filename
 from logging import DEBUG, basicConfig, getLogger
 from flask_wtf import Form
@@ -73,15 +74,17 @@ def store_file(file, desc):
     ))
 
 
+""" REPLACING THIS WITH staticmethod within the File model
 def recent_uploads(num):
     return sorted(stored_files, key=lambda up: up['date_created'], reverse=True)[:num]
+"""
 
 
 def is_allowed(file):
     return '.' in file and file.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-# --- WTF Forms implementation ==> TODO: refactor to a separate module
+# --- FORMS: WTF Forms implementation ==> TODO: refactor to a separate module
 class IndexForm(Form):
     title = "File Uploader"
 
@@ -111,14 +114,7 @@ class CustomerForm(Form):
     pass
 
 
-# --- OLD Model classes
-class Customer:
-    def __init__(self, customer_name, registered_email):
-        self.customer_name = customer_name
-        self.registered_email = registered_email
-
-
-# --- SQLAlchemy Model classes (Model ==> SQL Table)
+# --- MODELS: SQLAlchemy Model classes (Model ==> SQL Table) ==> TODO: refactor to a separate module
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     f_name = db.Column(db.String(120), nullable=False)
@@ -127,10 +123,18 @@ class File(db.Model):
     # it will resolve to the date at the time o construction? 
     # This way the date will be generated each time we create a new one
 
+    @staticmethod
+    def recent_uploads(num):
+        return File.query.order_by(desc(File.f_date_added)).limit(num)  # select * from `file` order by `f_date_added` desc limit num
+
+
+
+
     def __repr__(self):
         return f"<File `{self.f_name}`: `{self.f_description}`"
 
 
+"""
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     c_name = db.Column(db.String(80), unique=True)
@@ -138,9 +142,17 @@ class Customer(db.Model):
 
     def __repr__(self):
         return f"<Customer `{self.c_name}`: `{self.c_email}`"
+"""
 
 
-# --- View functions
+# --- OLD Model classes
+class Customer:
+    def __init__(self, customer_name, registered_email):
+        self.customer_name = customer_name
+        self.registered_email = registered_email
+
+
+# --- VIEWS: View functions
 @app.route('/')
 @app.route('/index')
 def index():
@@ -148,7 +160,7 @@ def index():
     return render_template('index.html',
                            title="file uploader",
                            testo="Please use this page to upload your data.",
-                           recent_uploads=recent_uploads(4),
+                           recent_uploads=File.recent_uploads(4),
                            form=form)
 
 
@@ -159,9 +171,16 @@ def upload():
         file_name = form.file_name.data
         file_description = form.file_description.data
         file_name.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file_name.filename)))
+
+        store_file(file_name.filename, file_description)
+
+        fm = File(f_name=file_name.filename, f_description=file_description)
+        db.session.add(fm)
+        db.session.commit()
+
         flash(f"Stored file: `{file_name.filename}`")
         logger.debug(f"stored file `{file_name.filename}`")
-        store_file(file_name.filename, file_description)
+
         return redirect(url_for('index'))
     return render_template("upload.html", form=form)
 

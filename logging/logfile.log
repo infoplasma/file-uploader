@@ -1,0 +1,14 @@
+2020-12-17 19:19:56,655|werkzeug|WARNING:  * Debugger is active!
+2020-12-17 19:19:56,662|werkzeug|INFO:  * Debugger PIN: 861-500-064
+2020-12-17 19:19:56,670|werkzeug|INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2020-12-17 19:19:58,285|werkzeug|INFO: 127.0.0.1 - - [17/Dec/2020 19:19:58] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-17 19:20:15,785|werkzeug|INFO: 127.0.0.1 - - [17/Dec/2020 19:20:15] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-17 19:20:38,800|werkzeug|INFO: 127.0.0.1 - - [17/Dec/2020 19:20:38] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-17 19:21:00,579|werkzeug|INFO: 127.0.0.1 - - [17/Dec/2020 19:21:00] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-17 19:21:46,796|werkzeug|INFO: 127.0.0.1 - - [17/Dec/2020 19:21:46] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-17 19:22:24,129|werkzeug|INFO: 127.0.0.1 - - [17/Dec/2020 19:22:24] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-17 19:22:35,138|werkzeug|INFO: 127.0.0.1 - - [17/Dec/2020 19:22:35] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-17 19:22:46,630|werkzeug|INFO: 127.0.0.1 - - [17/Dec/2020 19:22:46] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-17 19:23:05,020|werkzeug|INFO: 127.0.0.1 - - [17/Dec/2020 19:23:05] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-17 19:23:06,796|werkzeug|INFO: 127.0.0.1 - - [17/Dec/2020 19:23:06] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-17 19:23:21,142|werkzeug|INFO: 127.0.0.1 - - [17/Dec/2020 19:23:21] "[37mGET /index HTTP/1.1[0m" 200 -
