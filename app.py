@@ -68,7 +68,7 @@ stored_files = []
 
 # Fake login
 def logged_in_customer():
-    return Customer.query.filter_by(c_name="pippo").first()
+    return Customer.query.filter_by(c_name="pizza").first()
 
 
 """ no longer in use
@@ -116,8 +116,7 @@ class CustomerForm(Form):
 class UploadForm(Form):
     file_name = FileField('file_name', validators=[DataRequired()])
     file_description = StringField('file_description')
-    customer_name = "Esteve"
-    registered_email = "esteve@infinity.com"
+
     title = "upload"
 
     def validate(self):
@@ -198,7 +197,7 @@ def upload():
         logger.debug(f"stored file `{file_name.filename}`")
 
         return redirect(url_for('index'))
-    return render_template("upload.html", form=form)
+    return render_template("upload.html", cu=logged_in_customer(),  form=form)
 
 
 @app.route('/customer/<customer_name>')

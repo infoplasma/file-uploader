@@ -10,13 +10,10 @@ BitBed -- Upload
     <h3>Select file you want to upload:</h3>
     <table>
         <tr>
-            <td>Client Name: </td>
-            <td>{{ form.customer_name}}</td>
+            <td>Logged in as: </td>
+            <td><a href="{{ url_for('customer', customer_name=cu.c_name) }}">{{ cu.c_name }}</a></td>
         </tr>
-        <tr>
-            <td>Client email: </td>
-            <td>{{ form.registered_email }}</td>
-        </tr>
+
     </table>
     <p></p>
     <form action="" method="POST" enctype="multipart/form-data">
