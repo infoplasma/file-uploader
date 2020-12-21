@@ -1,20 +1,28 @@
 import os
 from datetime import datetime
-from flask import Flask, render_template, flash, redirect, url_for
+
+from flask import Flask, render_template, flash, redirect, url_for, request
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
+
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
 from logging import DEBUG, basicConfig, getLogger
+
 from flask_wtf import Form
-from wtforms import FileField, StringField
-from wtforms.validators import DataRequired
+from wtforms import FileField, StringField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import DataRequired, Length, Regexp, Email, ValidationError, EqualTo
+
+from flask_login import LoginManager, login_required, UserMixin, login_user, current_user, logout_user
 
 
 #########################
 # CONFIGURATION SECTION #
 #########################
 
-# --- directory configuration
+# --- app configuration and setup
+# constant setup
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_DIR = os.path.join(BASE_DIR, 'uploads')
 LOG_DIR = os.path.join(BASE_DIR, 'logging')
@@ -23,26 +31,40 @@ LOG_FORMAT = '%(asctime)s|%(name)s|%(levelname)s: %(message)s'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv'}
 DB_NAME = 'bitbed.db'
 
+# dir structure setup
 if not os.path.isdir(UPLOAD_DIR):
     os.mkdir(UPLOAD_DIR)
-
 if not os.path.isdir(LOG_DIR):
     os.mkdir(LOG_DIR)
 
-# --- logger configuration (levels: debug, info, warning, error, critical)
+# logger option setup (levels: debug, info, warning, error, critical)
 basicConfig(filename=os.path.join(LOG_DIR, LOG_FILE),
             level=DEBUG,
             format=LOG_FORMAT,
             filemode='w')
 logger = getLogger(__name__)
 
-# --- app configuration and setup
+# --- app init
 app = Flask(__name__)
+
+# --- app options
 app.config['UPLOAD_FOLDER'] = UPLOAD_DIR
 app.config['SECRET_KEY'] = 'p@\x90\xb4\nO\xa2\x18\x10\x0eB\x88\xd0\xa8\xf5o\xfaC\x898n\x99\xf0['
 app.config['MAX_CONTENT_PATH'] = BASE_DIR
+
+# --- database setup
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(BASE_DIR, DB_NAME)}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# db connection setup
+db = SQLAlchemy(app)
+
+# --- authentication setup
+login_manager = LoginManager()
+# authentication options
+login_manager.session_protection = 'strong'
+login_manager.login_view = 'login'
+# initialize login manager
+login_manager.init_app(app)
 
 # notes:
 #  1. to generate the SECRET_KEY, one way is to
@@ -57,40 +79,22 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # overhead and '
 #   must set: >>> app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False either True or False.
 
-# --- create db connection
-db = SQLAlchemy(app)
-
-# --- temporary store
-stored_files = []
-
 
 # --- helper functions
+# Fake login -- TODO: REMOVE THIS
+# def logged_in_customer():
+#     return Customer.query.filter_by(c_name="pizza").first()
 
-# Fake login
-def logged_in_customer():
-    return Customer.query.filter_by(c_name="pizza").first()
 
-
-""" no longer in use
-def store_file(file, desc):
-    stored_files.append(dict(
-        file_name=file,
-        client_name="test_client",
-        file_description=desc,
-        date_created=datetime.utcnow()
-    ))
-"""
-
-""" REPLACING THIS WITH staticmethod within the File model
-def recent_uploads(num):
-    return sorted(stored_files, key=lambda up: up['date_created'], reverse=True)[:num]
-"""
+@login_manager.user_loader
+def load_user(user_id):
+    return Customer.query.get(int(user_id))
 
 
 def initdb():
     db.create_all()
-    db.session.add(Customer(c_name="pippo", c_email="pippo@piscopauro.com"))
-    db.session.add(Customer(c_name="pizza", c_email="pizza@ngrillo.com"))
+    db.session.add(Customer(c_name="pippo", c_email="pippo@piscopauro.com", password='test'))
+    db.session.add(Customer(c_name="pizza", c_email="pizza@ngrillo.com", password='test'))
     db.session.commit()
     print("INITIALIZED THE DATABASE")
 
@@ -105,8 +109,31 @@ def is_allowed(file):
 
 
 # --- FORMS: WTF Forms implementation ==> TODO: refactor to a separate module
-class IndexForm(Form):
-    title = "File Uploader"
+class LoginForm(Form):
+    username = StringField('Username:', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Keep me logged in')
+    submit = SubmitField('Log In')
+
+
+class SignupForm(Form):
+    username = StringField('Username',
+                           validators=[DataRequired(), Length(3, 80),
+                                       Regexp('^[A-Za-z0-9_]{3,}$',
+                                              message='Usernames consist of numbers, letters, and underscores.')])
+    password = PasswordField('Password',
+                             validators=[DataRequired(), EqualTo('password2', message='Passwords must match.')])
+    password2 = PasswordField('Confirm password', validators=[DataRequired()])
+    email = StringField('Email',
+                        validators=[DataRequired(), Length(1, 120), Email()])
+
+    def validate_email(self, email_field):
+        if Customer.query.filter_by(c_email=email_field.data).first():
+            raise ValidationError('There already is a user with this email address')
+
+    def validate_username(self, username_field):
+        if Customer.query.filter_by(c_name=username_field.data).first():
+            raise ValidationError('This username is already taken.')
 
 
 class CustomerForm(Form):
@@ -151,17 +178,32 @@ class File(db.Model):
         return f"<File {self.f_name} {self.f_description}>"
 
 
-class Customer(db.Model):
+class Customer(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     c_name = db.Column(db.String(80), unique=True)
     c_email = db.Column(db.String(120), unique=True)
     c_files = db.relationship('File', backref='customer', lazy='dynamic')
-
     # backref argument: means that on the other side of the relation, which is on the File side, there will be a
     # property called `customer`, which will hold the user objects, so we'll not have to work with the customer.id field
     # on the File class. Instead we can work with real Python objects since there will be a list of `file`
     # objects on every `customer`, and there will be a `customer` object on every `file`. That way we hide the mechanics
     # of setting up foreign keys on the database.
+    password_hash = db.Column(db.String)
+
+    @property
+    def password(self):
+        raise AttributeError('password: write-only field')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    @staticmethod
+    def get_by_username(username):
+        return Customer.query.filter_by(c_name=username).first()
 
     def __repr__(self):
         return f"<Customer {self.c_name}: {self.c_email}>"
@@ -171,15 +213,16 @@ class Customer(db.Model):
 @app.route('/')
 @app.route('/index')
 def index():
-    form = IndexForm()
+
+    #form = IndexForm()
     return render_template('index.html',
                            title="file uploader",
                            testo="Please use this page to upload your data.",
-                           recent_uploads=File.recent_uploads(4),
-                           form=form)
+                           recent_uploads=File.recent_uploads(4))
 
 
 @app.route('/upload', methods=['GET', 'POST'])
+@login_required
 def upload():
     form = UploadForm()
     if form.validate_on_submit():
@@ -187,8 +230,8 @@ def upload():
         file_description = form.file_description.data
         file_name.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file_name.filename)))
 
-        fm = File(customer=logged_in_customer(), f_name=file_name.filename, f_description=file_description)
-        logger.debug(f"fm {fm} {logged_in_customer()} - {file_name.filename} - {file_description}")
+        fm = File(customer=current_user, f_name=file_name.filename, f_description=file_description)
+        logger.debug(f"fm {fm} {current_user} - {file_name.filename} - {file_description}")
 
         db.session.add(fm)
         db.session.commit()
@@ -197,54 +240,47 @@ def upload():
         logger.debug(f"stored file `{file_name.filename}`")
 
         return redirect(url_for('index'))
-    return render_template("upload.html", cu=logged_in_customer(),  form=form)
+    return render_template("upload.html", cu=current_user,  form=form)
 
 
 @app.route('/customer/<customer_name>')
 def customer(customer_name):
-    form = CustomerForm()
     cust = Customer.query.filter_by(c_name=customer_name).first_or_404()
     logger.debug(f"==> {cust} --- {customer_name}")
     return render_template('customer.html',
-                           cust=cust,
-                           form=form)
+                           cust=cust)
 
 
-""" BEFORE CHANGING TO WTF FORM NEW VIEW ==>
-def upload():
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    user = Customer.get_by_username(form.username.data)
+    if user is not None and user.check_password(form.password.data):
+        login_user(user, form.remember_me.data)
+        flash(f"Logged in as {user.c_name}")
+        return redirect(request.args.get('next') or url_for('customer', customer_name=user.c_name))
+    flash("Incorrect username or password.")
+    return render_template("login.html", form=form)
 
-    return render_template('upload.html', title="upload", testo="Please enter the file containing the raw data. "
-                                                                "Allowed Types are: `csv`, `xlsx`",
-                           customer=Customer("Esteve", "esteve@infinity.com"))
-"""
 
-""" no longer in use
-@app.route('/uploader', methods=['GET', 'POST'])
-def upload_file():
-    form = UploadForm()
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    form = SignupForm()
     if form.validate_on_submit():
-        file_name = form.file_name.data
-        file_description = form.file_description.data
-        file_name.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file_name.filename)))
-        flash(f"Stored file: `{file_name.filename}`")
-        logger.debug(f"stored file `{file_name.filename}`")
-        store_file(file_name.filename, file_description)
-        return redirect(url_for('index'))
-    return render_template(url_for('upload'))
-"""
+        cust = Customer(c_email=form.email.data,
+                        c_name=form.username.data,
+                        password=form.password.data)
+        db.session.add(cust)
+        db.session.commit()
+        flash(f'Welcome, {cust.c_name}! Please login.')
+        return redirect(url_for('login'))
+    return render_template('signup.html', form=form)
 
-""" BEFORE CHANGING TO WTF FORM NEW VIEW ==>
-def upload_file():
-    if request.method == 'POST':
-        f = request.files['file']
-        file_description = request.form['file_description']
-        f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-        flash(f"Stored file: `{f.filename}`")
-        logger.debug(f"stored file `{f.filename}`")
-        store_file(f.filename, file_description)
-        return redirect(url_for('index'))
-    return render_template(url_for('upload'))
-"""
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 
 # --- Error handling

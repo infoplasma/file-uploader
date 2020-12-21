@@ -1,17 +1,7 @@
-2020-12-18 01:10:39,384|werkzeug|WARNING:  * Debugger is active!
-2020-12-18 01:10:39,390|werkzeug|INFO:  * Debugger PIN: 861-500-064
-2020-12-18 01:10:39,397|werkzeug|INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-2020-12-18 01:10:41,369|werkzeug|INFO: 127.0.0.1 - - [18/Dec/2020 01:10:41] "[37mGET /index HTTP/1.1[0m" 200 -
-2020-12-18 01:10:43,797|werkzeug|INFO: 127.0.0.1 - - [18/Dec/2020 01:10:43] "[37mGET /upload HTTP/1.1[0m" 200 -
-2020-12-18 01:10:46,545|__main__|DEBUG: ==> <Customer pizza: pizza@ngrillo.com> --- pizza
-2020-12-18 01:10:46,564|werkzeug|INFO: 127.0.0.1 - - [18/Dec/2020 01:10:46] "[37mGET /customer/pizza HTTP/1.1[0m" 200 -
-2020-12-18 01:10:49,672|werkzeug|INFO: 127.0.0.1 - - [18/Dec/2020 01:10:49] "[37mGET /upload HTTP/1.1[0m" 200 -
-2020-12-18 01:11:34,060|__main__|DEBUG: edicion-video_notas_sobre_formatos.txt
-2020-12-18 01:11:34,061|__main__|DEBUG: notas
-2020-12-18 01:11:34,076|__main__|DEBUG: fm <File edicion-video_notas_sobre_formatos.txt notas> <Customer pizza: pizza@ngrillo.com> - edicion-video_notas_sobre_formatos.txt - notas
-2020-12-18 01:11:34,084|__main__|DEBUG: stored file `edicion-video_notas_sobre_formatos.txt`
-2020-12-18 01:11:34,085|werkzeug|INFO: 127.0.0.1 - - [18/Dec/2020 01:11:34] "[32mPOST /upload HTTP/1.1[0m" 302 -
-2020-12-18 01:11:34,338|werkzeug|INFO: 127.0.0.1 - - [18/Dec/2020 01:11:34] "[37mGET /index HTTP/1.1[0m" 200 -
-2020-12-18 01:11:43,516|__main__|DEBUG: ==> <Customer pizza: pizza@ngrillo.com> --- pizza
-2020-12-18 01:11:43,519|werkzeug|INFO: 127.0.0.1 - - [18/Dec/2020 01:11:43] "[37mGET /customer/pizza HTTP/1.1[0m" 200 -
-2020-12-18 01:11:49,891|werkzeug|INFO: 127.0.0.1 - - [18/Dec/2020 01:11:49] "[37mGET /upload HTTP/1.1[0m" 200 -
+2020-12-21 23:13:05,464|werkzeug|WARNING:  * Debugger is active!
+2020-12-21 23:13:05,469|werkzeug|INFO:  * Debugger PIN: 861-500-064
+2020-12-21 23:13:05,473|werkzeug|INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2020-12-21 23:13:05,592|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:13:05] "[37mGET / HTTP/1.1[0m" 200 -
+2020-12-21 23:13:05,684|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:13:05] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2020-12-21 23:13:13,345|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:13:13] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-21 23:13:13,390|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:13:13] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
