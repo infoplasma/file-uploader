@@ -1,7 +1,15 @@
-2020-12-21 23:13:05,464|werkzeug|WARNING:  * Debugger is active!
-2020-12-21 23:13:05,469|werkzeug|INFO:  * Debugger PIN: 861-500-064
-2020-12-21 23:13:05,473|werkzeug|INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-2020-12-21 23:13:05,592|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:13:05] "[37mGET / HTTP/1.1[0m" 200 -
-2020-12-21 23:13:05,684|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:13:05] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
-2020-12-21 23:13:13,345|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:13:13] "[37mGET /index HTTP/1.1[0m" 200 -
-2020-12-21 23:13:13,390|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:13:13] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2020-12-21 23:22:44,690|werkzeug|WARNING:  * Debugger is active!
+2020-12-21 23:22:44,696|werkzeug|INFO:  * Debugger PIN: 861-500-064
+2020-12-21 23:22:44,701|werkzeug|INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2020-12-21 23:22:55,882|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:22:55] "[37mGET /login HTTP/1.1[0m" 200 -
+2020-12-21 23:22:55,934|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:22:55] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2020-12-21 23:23:15,806|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:23:15] "[32mPOST /login HTTP/1.1[0m" 302 -
+2020-12-21 23:23:15,813|__main__|DEBUG: ==> <Customer imanol: imanol@test.com> --- imanol
+2020-12-21 23:23:15,817|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:23:15] "[37mGET /customer/imanol HTTP/1.1[0m" 200 -
+2020-12-21 23:23:15,868|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:23:15] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2020-12-21 23:23:18,717|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:23:18] "[35m[1mGET /customer/ HTTP/1.1[0m" 500 -
+2020-12-21 23:23:18,736|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:23:18] "[37mGET /customer/?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 200 -
+2020-12-21 23:23:18,737|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:23:18] "[37mGET /customer/?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1[0m" 200 -
+2020-12-21 23:23:18,738|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:23:18] "[37mGET /customer/?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 200 -
+2020-12-21 23:23:18,782|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:23:18] "[37mGET /customer/?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1[0m" 200 -
+2020-12-21 23:23:18,798|werkzeug|INFO: 127.0.0.1 - - [21/Dec/2020 23:23:18] "[37mGET /customer/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 200 -
