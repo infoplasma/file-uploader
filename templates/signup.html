@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+BitBed -- Login
+{% endblock %}
+
+{% block content %}
+
+<section>
+    <h1 style="clear:both">Create an account</h1>
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <table>
+            <p>Username: {{ form.username }}</p>
+            <p>email: {{ form.email }}</p>
+            <p>password: {{ form.password }}</p>
+            <p>confirm: {{ form.password2 }}</p>
+            <tr class="submit">
+                <td><button type="submit">Submit</button></td>
+            </tr>
+        </table>
+    </form>
+</section>
+
+{% endblock %}
