@@ -6,13 +6,6 @@ BitBed -- Welcome
 
 {% block content %}
     <article>
-        <header>
-            <h1>File Uploader</h1>
-            <p>{{ testo }}</p>
-        </header>
-    </article>
-
-    <article>
 
         <footer>
         <section>
@@ -21,7 +14,7 @@ BitBed -- Welcome
             <ul>
                 {% for f in recent_uploads %}
                     <li>
-                        <a href="{{ url_for('customer', customer_name=f.customer.c_name) }}">{{ f.customer.c_name }}</a> added `{{ f.f_name }}` with description `{{ f.f_description }}`
+                        `{{ f.f_name }}`:  {{ f.f_description }}
                     </li>
                 {% endfor %}
             </ul>

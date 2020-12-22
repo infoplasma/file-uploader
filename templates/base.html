@@ -18,7 +18,7 @@
                     <ul>
                         <li><a href="{{ url_for('upload') }}">Upload</a></li>
                         {% if current_user.is_authenticated %}
-                            <li><a href="{{ url_for('customer', customer_name=current_user.username) }}">
+                            <li><a href="{{ url_for('customer', customer_name=current_user.c_name) }}">
                                 My Links</a></li>
                             <li><a href="{{url_for('logout') }}">Sign out</a></li>
                         {% else %}

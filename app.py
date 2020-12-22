@@ -108,7 +108,7 @@ def is_allowed(file):
     return '.' in file and file.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-# --- FORMS: WTF Forms implementation ==> TODO: refactor to a separate module
+# --- ## FORMS ## WTF Forms implementation ==> TODO: refactor to a separate module
 class LoginForm(Form):
     username = StringField('Username:', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -136,15 +136,9 @@ class SignupForm(Form):
             raise ValidationError('This username is already taken.')
 
 
-class CustomerForm(Form):
-    title = "Customer data"
-
-
 class UploadForm(Form):
     file_name = FileField('file_name', validators=[DataRequired()])
     file_description = StringField('file_description')
-
-    title = "upload"
 
     def validate(self):
         logger.debug(msg=self.file_name.data.filename)
@@ -206,18 +200,15 @@ class Customer(db.Model, UserMixin):
         return Customer.query.filter_by(c_name=username).first()
 
     def __repr__(self):
-        return f"<Customer {self.c_name}: {self.c_email}>"
+        return f"<Customer {self.c_name} {self.c_email}>"
 
 
 # --- VIEWS: View functions
 @app.route('/')
 @app.route('/index')
 def index():
-
-    #form = IndexForm()
     return render_template('index.html',
-                           title="file uploader",
-                           testo="Please use this page to upload your data.",
+                           testo="This is Bedrock File Uploader.",
                            recent_uploads=File.recent_uploads(4))
 
 
@@ -240,15 +231,15 @@ def upload():
         logger.debug(f"stored file `{file_name.filename}`")
 
         return redirect(url_for('index'))
-    return render_template("upload.html", cu=current_user,  form=form)
+    return render_template("upload.html", testo="Please use this page to upload your data.", cust=current_user,  form=form)
 
 
 @app.route('/customer/<customer_name>')
+@login_required
 def customer(customer_name):
-    cust = Customer.query.filter_by(c_name=customer_name).first_or_404()
-    logger.debug(f"==> {cust} --- {customer_name}")
-    return render_template('customer.html',
-                           cust=cust)
+    cust = Customer.query.filter_by(c_name=current_user.c_name).first_or_404()
+    logger.debug(f"==> {cust} --- {cust.c_name}")
+    return render_template('customer.html', cust=cust)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -258,8 +249,10 @@ def login():
     if user is not None and user.check_password(form.password.data):
         login_user(user, form.remember_me.data)
         flash(f"Logged in as {user.c_name}")
+
         return redirect(request.args.get('next') or url_for('customer', customer_name=user.c_name))
-    flash("Incorrect username or password.")
+    else:
+        flash("Incorrect username or password.")
     return render_template("login.html", form=form)
 
 
@@ -274,7 +267,7 @@ def signup():
         db.session.commit()
         flash(f'Welcome, {cust.c_name}! Please login.')
         return redirect(url_for('login'))
-    return render_template('signup.html', form=form)
+    return render_template('signup.html', testo="Please use this page to Sign up.", form=form)
 
 
 @app.route('/logout')
