@@ -1,6 +1,16 @@
-2020-12-22 19:14:55,187|werkzeug|WARNING:  * Debugger is active!
-2020-12-22 19:14:55,192|werkzeug|INFO:  * Debugger PIN: 861-500-064
-2020-12-22 19:14:55,201|werkzeug|INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-2020-12-22 19:15:12,669|__main__|DEBUG: ==> <Customer lorenzo lorenzo@test.com> --- lorenzo
-2020-12-22 19:15:12,680|werkzeug|INFO: 127.0.0.1 - - [22/Dec/2020 19:15:12] "[37mGET /customer/lorenzo HTTP/1.1[0m" 200 -
-2020-12-22 19:15:12,734|werkzeug|INFO: 127.0.0.1 - - [22/Dec/2020 19:15:12] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2020-12-28 13:49:24,066|werkzeug|WARNING:  * Debugger is active!
+2020-12-28 13:49:24,075|werkzeug|INFO:  * Debugger PIN: 861-500-064
+2020-12-28 13:49:24,081|werkzeug|INFO:  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2020-12-28 13:49:31,886|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:31] "[37mGET / HTTP/1.1[0m" 200 -
+2020-12-28 13:49:31,907|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:31] "[36mGET /static/css/normalize.min.css HTTP/1.1[0m" 304 -
+2020-12-28 13:49:31,908|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:31] "[37mGET /static/css/main.css HTTP/1.1[0m" 200 -
+2020-12-28 13:49:31,908|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:31] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2020-12-28 13:49:31,909|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:31] "[36mGET /static/js/vendor/modernizr-2.8.3-respond-1.4.2.min.js HTTP/1.1[0m" 304 -
+2020-12-28 13:49:31,995|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:31] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2020-12-28 13:49:37,057|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:37] "[37mGET /index HTTP/1.1[0m" 200 -
+2020-12-28 13:49:37,122|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:37] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2020-12-28 13:49:46,210|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:46] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2020-12-28 13:49:46,211|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:46] "[36mGET /static/js/vendor/modernizr-2.8.3-respond-1.4.2.min.js HTTP/1.1[0m" 304 -
+2020-12-28 13:49:46,213|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:46] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2020-12-28 13:49:46,213|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:46] "[36mGET /static/css/normalize.min.css HTTP/1.1[0m" 304 -
+2020-12-28 13:49:46,319|werkzeug|INFO: 127.0.0.1 - - [28/Dec/2020 13:49:46] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
