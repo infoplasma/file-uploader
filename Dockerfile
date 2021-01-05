@@ -43,7 +43,8 @@
 #
 #
 
-# docker build --build-arg BUILD_DATE="" --build-arg VCS_REF="" --build-arg VERSION=v1.0 -t infoplasma/file-uploader:v1.0 .
+# docker build -t infoplasma/<image_name>:v1.0 .
+# docker container run -d --name <container_name>> -p 5000:5000 <image_name>
 
 
 FROM python:3.8-alpine3.10
@@ -74,5 +75,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # ENTRYPOINT /app/start.sh
 ENTRYPOINT ["python", "./app.py"]
+CMD [""]
 
 
