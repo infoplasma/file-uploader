@@ -28,7 +28,7 @@ UPLOAD_DIR = os.path.join(BASE_DIR, 'uploads')
 LOG_DIR = os.path.join(BASE_DIR, 'logging')
 LOG_FILE = 'logfile.log'
 LOG_FORMAT = '%(asctime)s|%(name)s|%(levelname)s: %(message)s'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv', 'xls', 'xlsx'}
 DB_NAME = 'bitbed.db'
 
 # dir structure setup
@@ -150,7 +150,7 @@ class UploadForm(Form):
         if is_allowed(self.file_name.data.filename):
             return True
         else:
-            flash('Allowed file types: txt, pdf, png, jpg, jpeg, gif')
+            flash(f'Allowed file types: {ALLOWED_EXTENSIONS}')
             return False
 
 
