@@ -10,7 +10,12 @@ passphrase: `infoplasma`
 this vm is a debian 9.
 
 we need to install pip, and virtualenv first
-then nginx and gunicorn
+then nginx
+   https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-debian-9
+
+   https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04
+
+and gunicorn
 and settup firewall permissions
 
 process
@@ -21,6 +26,7 @@ apt install ufw
 
 ufw app list
 allow the following
+ufw enable
 (file-uploader) lorenzo_amante@file-uploader:~/dev/file-uploader$ sudo ufw status
 Status: active
 
@@ -105,7 +111,20 @@ https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications
    63  sudo unlink /etc/nginx/sites-enabled/default 
    64  sudo nginx -s reload
    65  sudo vim /etc/nginx/sites-enabled/file-uploader
+
+server {
+  listen 80;
+  server_name 34.65.151.42;
+
+  location / {
+    proxy_pass http://0.0.0.0:5000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}
+
    66  sudo nginx -s reload
+sudo systemctl restart nginx
    67  gunicorn -w 3 file-uploader:app
    68  gunicorn -w 3 app.py 
    69  ufw
@@ -143,10 +162,12 @@ https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications
  
 
 
-I hhave set the max upload file size to 40M in ngnix config file `/etc/nginx/nginx.conf`:
+I had to set the max upload file size to 40M in ngnix config file `/etc/nginx/nginx.conf` within `http` section:
 
         client_max_body_size 40M;
 
 to reload nginx:
 
       sudo systemctl restart nginx
+source: https://rtcamp.com/tutorials/php/increase-file-upload-size-limit/
+

@@ -2,4 +2,4 @@
 __pycache__/
 *.db
 uploads/
-logging/*
+logging/logfile.log

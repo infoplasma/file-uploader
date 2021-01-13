@@ -16,6 +16,8 @@ from wtforms.validators import DataRequired, Length, Regexp, Email, ValidationEr
 
 from flask_login import LoginManager, login_required, UserMixin, login_user, current_user, logout_user
 
+from google.cloud import storage
+
 
 #########################
 # CONFIGURATION SECTION #
@@ -91,10 +93,16 @@ def load_user(user_id):
     return Customer.query.get(int(user_id))
 
 
+def upload_to_blob(filename):
+    client = storage.Client.from_service_account_json(json_credentials_path='bosch-dashboard-295910-b9306f4b5581.json')
+    bucket = client.get_bucket('file-uploader_vol')
+    blob = bucket.blob(filename)
+    blob.upload_from_filename(os.path.join(UPLOAD_DIR, secure_filename(filename)))
+
+
 def initdb():
     db.create_all()
-    db.session.add(Customer(c_name="pippo", c_email="pippo@piscopauro.com", password='test'))
-    db.session.add(Customer(c_name="pizza", c_email="pizza@ngrillo.com", password='test'))
+    db.session.add(Customer(c_name="init", c_email="init@init.it", password='test'))
     db.session.commit()
     print("INITIALIZED THE DATABASE")
 
@@ -226,7 +234,7 @@ def upload():
 
         db.session.add(fm)
         db.session.commit()
-
+        upload_to_blob(file_name.filename)
         flash(f"Stored file: `{file_name.filename}`")
         logger.debug(f"stored file `{file_name.filename}`")
 
